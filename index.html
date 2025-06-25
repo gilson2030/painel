@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel Admin Rolli</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #f7f7fb;
+      margin: 0;
+      font-family: 'Inter', Arial, sans-serif;
+      min-height: 100vh;
+      color: #222;
+    }
+    .painel {
+      max-width: 420px;
+      margin: 32px auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 20px rgba(80,80,120,0.08);
+      padding: 26px 16px 30px 16px;
+    }
+    h1 {
+      text-align: center;
+      color: #3b27ba;
+      font-size: 2.1rem;
+      margin-bottom: 8px;
+      font-weight: 900;
+      letter-spacing: .5px;
+    }
+    .login-box {
+      max-width: 340px;
+      margin: 55px auto 0 auto;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 18px #7c3aed15;
+      padding: 28px 20px 25px 20px;
+    }
+    .login-box h2 {
+      text-align: center;
+      font-size: 1.3rem;
+      color: #4824c6;
+      margin-bottom: 16px;
+    }
+    .login-box input, .form-admin input, .form-admin select, .form-admin textarea {
+      width: 100%;
+      padding: 12px 10px;
+      margin-bottom: 13px;
+      border: 1.5px solid #d6d6f7;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      background: #fafaff;
+      outline: none;
+      transition: border .18s;
+    }
+    .login-box input:focus, .form-admin input:focus, .form-admin select:focus, .form-admin textarea:focus {
+      border-color: #7c3aed;
+    }
+    .btn-primary {
+      background: #3b27ba;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      border-radius: 14px;
+      padding: 13px 0;
+      font-size: 1.11rem;
+      cursor: pointer;
+      transition: background .16s;
+      margin-bottom: 6px;
+      width: 100%;
+      box-shadow: 0 2px 12px #3b27ba20;
+    }
+    .btn-primary:hover { background: #6a4fff; }
+    .msg-erro {
+      color: #d9004b;
+      text-align: center;
+      font-size: 1rem;
+      margin-bottom: 12px;
+      min-height: 21px;
+    }
+    .logout-btn {
+      position: absolute; right: 20px; top: 18px; background: #fff; color: #7c3aed;
+      border: 2px solid #ece9ff; padding: 8px 16px; border-radius: 12px; font-weight: bold; cursor: pointer; z-index: 9;
+      font-size: 1rem;
+      box-shadow: 0 2px 8px #b5a7fa1e;
+    }
+    .logout-btn:hover { background: #f5f4ff; }
+    .admin-header {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; margin-bottom: 20px;
+    }
+    .admin-header img {
+      width: 38px; border-radius: 8px; box-shadow: 0 2px 8px #7c3aed12;
+    }
+    @media (max-width: 480px) {
+      .painel, .login-box {padding: 15px 3vw;}
+      .painel {margin: 14px 0;}
+    }
+    /* Formulário Admin */
+    .form-admin label {
+      font-size: 1.04rem;
+      font-weight: 600;
+      color: #392bb2;
+      margin-bottom: 3px;
+      display: block;
+      margin-top: 10px;
+    }
+    .form-admin input[type=checkbox] { width: auto; margin-right: 6px;}
+    .form-admin textarea {min-height: 48px;resize:vertical;}
+    .form-admin .linha { display: flex; gap: 8px;}
+    .form-admin .linha > * {flex: 1;}
+    .form-admin .btn-primary {margin-top: 8px;}
+    .form-admin .btn-cancelar {
+      background: #edeef5;
+      color: #3b27ba;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      padding: 11px 0;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-left: 7px;
+      width: 100%;
+      margin-top: 8px;
+    }
+    /* Lista de produtos */
+    .produtos-lista {
+      margin-top: 24px;
+      min-height: 110px;
+    }
+    .produto-admin-card {
+      display: flex; align-items: center; gap: 12px; background: #f8f7fd;
+      border-radius: 12px; margin-bottom: 12px; padding: 9px 10px 7px 8px;
+      box-shadow: 0 2px 8px #3b27ba0a;
+      border: 1.5px solid #e5e3f8;
+      position: relative;
+      transition: box-shadow .15s;
+    }
+    .produto-admin-card img {
+      width: 54px; height: 54px; border-radius: 10px; object-fit: cover; background: #f2f2f2;
+      border: 1px solid #ececec;
+    }
+    .produto-info-admin {
+      flex: 1; min-width: 0;
+    }
+    .produto-info-admin b {
+      color: #4824c6; font-size: 1.09rem; font-weight: 700;
+      display:block; margin-bottom: 2px;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;
+    }
+    .produto-info-admin .cat {
+      color: #7c3aed; font-size: 0.97rem; margin-bottom: 2px; display: inline-block;
+    }
+    .produto-info-admin .preco {
+      color: #25d366; font-weight: 700; font-size: 1.03rem;
+    }
+    .produto-info-admin .desc {
+      color: #222; font-size: .96rem; margin-bottom: 3px;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;
+    }
+    .tag-adm {
+      display: inline-block; font-size: .89rem; border-radius: 11px; background: #ffd600;
+      color: #222; font-weight: 600; margin-right: 5px; padding: 2px 10px;
+      margin-top: 2px;
+    }
+    .tag-adm.promocao { background: #7c3aed; color: #fff;}
+    .tag-adm.destaque { background: #ffb300; color: #fff;}
+    .btn-editar, .btn-excluir {
+      background: #edeef5; color: #3b27ba; border: none; border-radius: 10px; font-weight: bold;
+      padding: 8px 13px; font-size: .97rem; cursor: pointer; margin-left: 5px; margin-top: 5px;
+      transition: background .13s;
+    }
+    .btn-editar:hover { background: #cfbcff;}
+    .btn-excluir { background: #ffd8d8; color: #c41e1e;}
+    .btn-excluir:hover { background: #ffb3b3;}
+    @media (max-width:480px){
+      .produto-info-admin b, .produto-info-admin .desc {max-width:96px;}
+    }
+    .msg-erro-prod {color:#c41e1e;font-size:1rem;text-align:center;}
+    .sair-mobile {
+      display:none;position:fixed;left:10px;top:10px;z-index:20;background:#edeef5;color:#3b27ba;border:none;font-weight:bold;padding:8px 13px;border-radius:10px;
+      box-shadow: 0 2px 8px #b5a7fa1e;
+    }
+    @media (max-width: 500px){.sair-mobile{display:block;}}
+  </style>
+</head>
+<body>
+  <div class="painel" id="painel-admin" style="display:none;">
+    <div class="admin-header">
+      <img src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png" alt="Logo Rolli">
+      <h1>Painel Rolli</h1>
+    </div>
+    <button class="logout-btn" onclick="logout()">Sair</button>
+    <button class="sair-mobile" onclick="logout()">Sair</button>
+    <form class="form-admin" id="form-produto">
+      <input type="hidden" id="produto-id">
+      <label for="nome">Nome</label>
+      <input type="text" id="nome" maxlength="40" placeholder="Nome do produto" required>
+
+      <label for="categoria">Categoria</label>
+      <select id="categoria" required>
+        <option value="">Selecione</option>
+        <option>Óculos</option>
+        <option>Relógio</option>
+        <option>Fone</option>
+        <option>Carteira</option>
+        <option>Bolsas</option>
+        <option>Calçados</option>
+        <option>Roupas</option>
+        <option>Lanternas</option>
+        <option>Informática</option>
+        <option>Outros</option>
+      </select>
+      <div class="linha">
+        <div>
+          <label for="preco">Preço</label>
+          <input type="text" id="preco" placeholder="Ex: 99.99" required>
+        </div>
+        <div>
+          <label for="imagem">Imagem (URL)</label>
+          <input type="url" id="imagem" placeholder="https://linkdofoto.com/foto.jpg" required>
+        </div>
+      </div>
+      <label for="descricao">Descrição</label>
+      <textarea id="descricao" maxlength="120" placeholder="Ex: Produto original, garantia, etc."></textarea>
+      <label><input type="checkbox" id="destaque">Destaque</label>
+      <label><input type="checkbox" id="promocao">Promoção</label>
+      <div style="display:flex;gap:7px;">
+        <button type="submit" class="btn-primary" id="btn-salvar">Salvar Produto</button>
+        <button type="button" class="btn-cancelar" onclick="limparForm()">Cancelar</button>
+      </div>
+      <div class="msg-erro-prod" id="msg-erro-prod"></div>
+    </form>
+    <div class="produtos-lista" id="lista-produtos"></div>
+  </div>
+  <div class="login-box" id="box-login">
+    <h2>Login Admin</h2>
+    <input type="email" id="login-email" placeholder="Seu e-mail" autocomplete="username" required>
+    <input type="password" id="login-senha" placeholder="Sua senha" autocomplete="current-password" required>
+    <button class="btn-primary" id="btn-login">Entrar</button>
+    <div class="msg-erro" id="msg-erro-login"></div>
+  </div>
+  <!-- Firebase & App Script -->
+  <script type="module">
+    // Firebase imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCKWVJAOveA4N-Y5CbbJKUVJMPRRHS5vaE",
+      authDomain: "catalogo-rolli-acbb1.firebaseapp.com",
+      projectId: "catalogo-rolli-acbb1",
+      storageBucket: "catalogo-rolli-acbb1.appspot.com",
+      messagingSenderId: "986465468536",
+      appId: "1:986465468536:web:50ce79f10385317b032d8d"
+    };
+
+    // Init Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // DOM
+    const loginBox = document.getElementById('box-login');
+    const painel = document.getElementById('painel-admin');
+    const msgErroLogin = document.getElementById('msg-erro-login');
+    const msgErroProd = document.getElementById('msg-erro-prod');
+    const form = document.getElementById('form-produto');
+    const lista = document.getElementById('lista-produtos');
+
+    // Login
+    document.getElementById('btn-login').onclick = async () => {
+      const email = document.getElementById('login-email').value.trim();
+      const senha = document.getElementById('login-senha').value;
+      msgErroLogin.textContent = "";
+      try {
+        await signInWithEmailAndPassword(auth, email, senha);
+      } catch (err) {
+        msgErroLogin.textContent = "E-mail ou senha incorretos!";
+      }
+    };
+
+    // Autenticação
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        loginBox.style.display = "none";
+        painel.style.display = "block";
+        carregarProdutos();
+      } else {
+        painel.style.display = "none";
+        loginBox.style.display = "block";
+      }
+      limparForm();
+      msgErroProd.textContent = "";
+    });
+
+    // Logout
+    window.logout = function() {
+      signOut(auth);
+    };
+
+    // Limpar formulário
+    window.limparForm = function() {
+      form.reset();
+      document.getElementById('produto-id').value = '';
+      msgErroProd.textContent = "";
+      document.getElementById('btn-salvar').textContent = "Salvar Produto";
+    };
+
+    // Salvar/editar produto
+    form.onsubmit = async e => {
+      e.preventDefault();
+      msgErroProd.textContent = "";
+      const nome = form.nome.value.trim();
+      const categoria = form.categoria.value;
+      const preco = form.preco.value.trim().replace(',','.');
+      const imagem = form.imagem.value.trim();
+      const descricao = form.descricao.value.trim();
+      const destaque = form.destaque.checked;
+      const promocao = form.promocao.checked;
+
+      if (!nome || !categoria || !preco || !imagem) {
+        msgErroProd.textContent = "Preencha todos os campos obrigatórios!";
+        return;
+      }
+
+      const produto = { nome, categoria, preco, imagem, descricao, destaque, promocao };
+      try {
+        if (form['produto-id'].value) {
+          await updateDoc(doc(db, "produtos", form['produto-id'].value), produto);
+        } else {
+          await addDoc(collection(db, "produtos"), produto);
+        }
+        limparForm();
+        carregarProdutos();
+      } catch (err) {
+        msgErroProd.textContent = "Erro ao salvar. Tente novamente!";
+      }
+    };
+
+    // Listar produtos
+    async function carregarProdutos() {
+      lista.innerHTML = "<p style='color:#888;text-align:center;'>Carregando produtos...</p>";
+      const snap = await getDocs(collection(db, "produtos"));
+      let html = "";
+      snap.forEach(docu => {
+        const p = docu.data();
+        html += `
+          <div class="produto-admin-card">
+            <img src="${p.imagem || 'https://via.placeholder.com/70?text=Sem+Foto'}" alt="${p.nome||''}">
+            <div class="produto-info-admin">
+              <b>${p.nome||''}</b>
+              <span class="cat">${p.categoria||''}</span>
+              <span class="preco">R$ ${p.preco||''}</span>
+              <div class="desc">${p.descricao||''}</div>
+              ${p.destaque ? `<span class="tag-adm destaque">Destaque</span>` : ""}
+              ${p.promocao ? `<span class="tag-adm promocao">Promoção</span>` : ""}
+            </div>
+            <button class="btn-editar" onclick="editarProduto('${docu.id}')">Editar</button>
+            <button class="btn-excluir" onclick="excluirProduto('${docu.id}')">Excluir</button>
+          </div>
+        `;
+      });
+      lista.innerHTML = html || "<p style='color:#888;text-align:center;'>Nenhum produto cadastrado.</p>";
+    }
+
+    // Editar produto
+    window.editarProduto = async id => {
+      const snap = await getDocs(collection(db, "produtos"));
+      snap.forEach(docu => {
+        if (docu.id === id) {
+          const p = docu.data();
+          form['produto-id'].value = id;
+          form.nome.value = p.nome || '';
+          form.categoria.value = p.categoria || '';
+          form.preco.value = p.preco || '';
+          form.imagem.value = p.imagem || '';
+          form.descricao.value = p.descricao || '';
+          form.destaque.checked = !!p.destaque;
+          form.promocao.checked = !!p.promocao;
+          document.getElementById('btn-salvar').textContent = "Salvar Alteração";
+          window.scrollTo(0,0);
+        }
+      });
+    };
+
+    // Excluir produto
+    window.excluirProduto = async id => {
+      if (confirm("Excluir este produto?")) {
+        try {
+          await deleteDoc(doc(db, "produtos", id));
+          carregarProdutos();
+        } catch (err) {
+          msgErroProd.textContent = "Erro ao excluir!";
+        }
+      }
+    };
+  </script>
+</body>
+</html>
