@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Painel Admin Rolli</title>
+  <link rel="stylesheet" href="painel.css">
+</head>
+<body>
+  <div class="painel-container">
+    <header class="painel-header">
+      <div class="painel-logo-banner">
+        <img id="logo-preview" src="https://via.placeholder.com/120x80?text=Logo" alt="Logo Rolli" class="logo-img"/>
+        <input type="file" id="logo-upload" accept="image/*" style="display:none;">
+        <button onclick="document.getElementById('logo-upload').click()" class="btn-mudar">Alterar Logo</button>
+      </div>
+      <div class="painel-banner">
+        <img id="banner-preview" src="https://via.placeholder.com/900x220?text=Banner+Rolli" alt="Banner" class="banner-img"/>
+        <input type="file" id="banner-upload" accept="image/*" style="display:none;">
+        <button onclick="document.getElementById('banner-upload').click()" class="btn-mudar">Alterar Banner</button>
+        <input type="text" id="banner-texto" placeholder="Texto do Banner (ex: Promoção de Lançamento!)" maxlength="90" />
+        <button onclick="atualizarBannerTexto()" class="btn-mudar">Atualizar Texto</button>
+      </div>
+      <button onclick="logout()" class="btn-sair">Sair</button>
+    </header>
+
+    <section class="painel-categorias">
+      <h2>Categorias</h2>
+      <ul id="lista-categorias"></ul>
+      <input type="text" id="nova-categoria" maxlength="18" placeholder="Nova categoria...">
+      <button onclick="addCategoria()" class="btn-categoria">Adicionar</button>
+    </section>
+
+    <section class="painel-produtos">
+      <h2>Produtos</h2>
+      <form id="form-produto">
+        <input type="hidden" name="produto-id">
+        <input type="text" name="nome" placeholder="Nome do Produto" required>
+        <select name="categoria" required></select>
+        <input type="number" name="preco" step="0.01" min="0" placeholder="Preço" required>
+        <input type="text" name="imagem" placeholder="URL da Imagem">
+        <textarea name="descricao" placeholder="Descrição"></textarea>
+        <label><input type="checkbox" name="destaque"> Destaque</label>
+        <label><input type="checkbox" name="promocao"> Promoção</label>
+        <div>
+          <button type="submit" class="btn-salvar">Salvar Produto</button>
+          <button type="button" onclick="formReset()" class="btn-cancelar">Cancelar</button>
+        </div>
+      </form>
+      <div id="lista-produtos"></div>
+    </section>
+
+    <section class="painel-cores">
+      <h2>Personalizar Cores</h2>
+      <label>Cor Primária: <input type="color" id="cor-primaria" value="#5632d6" onchange="trocarCor()"></label>
+      <label>Cor Secundária: <input type="color" id="cor-secundaria" value="#ffd600" onchange="trocarCor()"></label>
+    </section>
+
+    <footer class="painel-footer">
+      <span>Novidades toda semana</span>
+    </footer>
+  </div>
+  <script type="module" src="painel.js"></script>
+</body>
+</html>
